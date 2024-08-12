@@ -1,0 +1,45 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DB_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model ProcessedPhoto {
+  createdAt         DateTime       @default(now())
+  id                String         @id @default(cuid())
+  processedPhotoUrl String?
+  updatedAt         DateTime       @updatedAt
+  uploadedPhoto     UploadedPhoto? @relation(fields: [uploadedPhotoId], references: [id])
+  uploadedPhotoId   String?
+}
+
+model UploadedPhoto {
+  createdAt       DateTime                 @default(now())
+  id              String                   @id @default(cuid())
+  photoUrl        String?
+  processedPhotos ProcessedPhoto[]
+  status          EnumUploadedPhotoStatus?
+  updatedAt       DateTime                 @updatedAt
+  user            User?                    @relation(fields: [userId], references: [id])
+  userId          String?
+}
+
+model User {
+  createdAt      DateTime        @default(now())
+  email          String?         @unique
+  firstName      String?
+  id             String          @id @default(cuid())
+  lastName       String?
+  password       String
+  roles          Json
+  updatedAt      DateTime        @updatedAt
+  uploadedPhotos UploadedPhoto[]
+  username       String          @unique
+}
+
+enum EnumUploadedPhotoStatus {
+  Option1
+}
